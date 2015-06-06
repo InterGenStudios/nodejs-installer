@@ -190,12 +190,12 @@ HELPTEXT () {
     echo "Operands:"
     echo
     BOLD_WHITE
-    echo " -cv \$username \$domain)"
+    echo " -cv \$username \$domain"
     WHITE
     echo "       creates NodeJS vhost entry for given \$username and \$domain"
     echo
     BOLD_WHITE
-    echo " -ca \$rootpass \$new-username \$new-domain \$new-userpass \$contact-email)"
+    echo " -ca \$rootpass \$new-username \$new-domain \$new-userpass \$contact-email"
     WHITE
     echo "       creates a cpanel user account using the variables passed to it"
     YELLOW
@@ -1084,7 +1084,7 @@ else
                     echo
                     echo "Exiting..."
                     WHITE
-                    printf "\n\n\n\n"
+                    printf "\n\n\n"
                     mv account_creation_results_"$NEW_USER_NAME" /var/log/
                     exit 1
                 else
@@ -1095,7 +1095,7 @@ else
                     rm -rf account_creation_results
                     sleep 2
                     WHITE
-                    printf "/n/n"
+                    printf "\n\n\n"
                     exit 0
                 fi
             fi;;
