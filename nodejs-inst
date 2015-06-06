@@ -430,7 +430,7 @@ RPASS_VALIDATE () {
 # Also needs subdomain option added for NodeJS_Installer
 
 CREATE_ACCT () {
-    cat > create_acct_template << EndOfCreateAcctTemplateFile
+    cat > create_acct_template << "EndOfCreateAcctTemplateFile"
     Domain Name:   NewDomainName
     User Name:     NewUserName
     User Password: NewPassword
