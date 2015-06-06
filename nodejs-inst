@@ -430,7 +430,7 @@ RPASS_VALIDATE () {
 # Also needs subdomain option added for NodeJS_Installer
 
 CREATE_ACCT () {
-    wget -q https://intergenstudios.com/Downloads/create_acct_template
+    wget -q https://raw.githubusercontent.com/InterGenStudios/nodejs-installer/master/create_acct_template
     clear
     HEADER
     GREEN
@@ -1053,7 +1053,7 @@ else
                 sleep 2
                 HELPTEXT
             elif [ "$NEW_DOMAIN_NAME" = "$(grep "$NEW_DOMAIN_NAME" /etc/userdomains | tail -1 | sed -e 's/:/ /' | awk '{print $1}')" ]; then
-                sleep 1 
+                sleep 1
                 clear
                 HEADER
                 RED
