@@ -1,0 +1,1134 @@
+#!/bin/bash
+# -------------------------------------------------------
+# NodeJS_Installer: Installs NodeJS on a cPanel server
+# NodeJS_Installer Version: .01
+# ---------------------------------------------------
+# ServerGurus: 6-4-15
+# Copyright (c) 2015: ServerGurus
+# URL: http://servergur.us
+# --------------------------------
+# License: GPL-2.0+
+# URL: http://opensource.org/licenses/gpl-license.php
+# ---------------------------------------------------
+# NodeJS_Installer is free software:
+# You may redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software
+# Foundation, either version 2 of the License, or (at your discretion)
+# any later version.
+# ------------------
+
+###########################################
+##---------------------------------------##
+## BEGIN - INITIAL VARIABLE DECLARATIONS ##
+##---------------------------------------##
+###########################################
+
+# Regex check for numbers as choices
+NC='^[0-9]+$'
+
+# Set server IP for script
+SERVER="$(/sbin/ifconfig | grep -A 1 0: | tail -1 | awk '{print $2}' | sed 's/addr://')"
+
+# NodeJS_Installer version
+vers=.01
+
+# Initial root password validation flag
+RPASS_VALIDATED=NO
+
+#########################################
+##-------------------------------------##
+## END - INITIAL VARIABLE DECLARATIONS ##
+##-------------------------------------##
+#########################################
+
+##############################
+##--------------------------##
+## BEGIN - SCRIPT FUNCTIONS ##
+##--------------------------##
+##############################
+
+#----------------------------------#
+# BEGIN - DISPLAY LAYOUT FUNCTIONS #
+#----------------------------------#
+
+# Colors trailing text Red
+RED () {
+    tput bold
+    tput setaf 1
+}
+
+# Colors trailing text Green
+GREEN () {
+    tput bold
+    tput setaf 2
+}
+
+# Colors trailing text Yellow
+YELLOW () {
+    tput bold
+    tput setaf 3
+}
+
+# Colors trailing text Blue
+BLUE () {
+    tput bold
+    tput setaf 4
+}
+
+# Clears any preceding text color declarations
+WHITE () {
+    tput sgr0
+}
+
+# Clears any preceding text color, and sets white to bold
+BOLD_WHITE () {
+    tput sgr0
+    tput bold
+}
+
+# Simple divider
+SEPARATOR () {
+    echo
+    BLUE
+    echo "============================================================================"
+    echo
+    WHITE
+}
+
+# Creates uniform look during script execution when called after any clear command
+HEADER () {
+    echo
+    GREEN
+    echo "======================================================================================"
+    BOLD_WHITE
+    echo "  NodeJS Installer v$vers"
+    GREEN
+    echo "======================================================================================"
+    WHITE
+    printf "\n\n"
+}
+
+# Clears $ amount of lines when called
+CLEARLINE () {
+    # To use, set CLINES=<$#> before function if you need to clear more than 1 line
+    if [ -z "$CLINES" ]; then
+        tput cuu 1 && tput el
+    else
+        tput cuu "$CLINES" && tput el
+        unset CLINES
+    fi
+}
+
+#--------------------------------#
+# END - DISPLAY LAYOUT FUNCTIONS #
+#--------------------------------#
+
+#---------------------------#
+# BEGIN - LOGGING FUNCTIONS #
+#---------------------------#
+
+#-------------------------#
+# END - LOGGING FUNCTIONS #
+#-------------------------#
+
+#------------------------#
+# BEGIN - TRAP FUNCTIONS #
+#------------------------#
+
+# Ran if CTRL+C is sent
+trap bashtrap INT
+
+# NOT_FINISHED
+bashtrap () {
+    clear
+    HEADER
+    SEPARATOR
+    RED
+    printf "\n\n"
+    echo "CTRL+C detected in terminal... halting installation..."
+    printf "\n\n\n\n"
+    WHITE
+    exit 1
+}
+
+#----------------------#
+# END - TRAP FUNCTIONS #
+#----------------------#
+
+#------------------------#
+# BEGIN - INFO FUNCTIONS #
+#------------------------#
+
+# Shows available usage options
+HELPTEXT () {
+    clear
+    HEADER
+    GREEN
+    echo "NodeJS Installer help:"
+    echo
+    echo "Installs NodeJS on a cPanel Server"
+    echo
+    echo "USAGE: "
+    echo
+    WHITE
+    echo "njs-installer (options) ... [operands]"
+    GREEN
+    echo
+    echo "Options:"
+    echo
+    BOLD_WHITE
+    printf " -v) "
+    WHITE
+    echo "displays NodeJS Installer version information and exits"
+    echo
+    BOLD_WHITE
+    printf " -h) "
+    WHITE
+    echo "displays NodeJS Installer helptext and exits"
+    printf "\n\n\n"
+    GREEN
+    echo "Operands:"
+    echo
+    BOLD_WHITE
+    printf " -cv \$username \$domain) "
+    WHITE
+    echo "creates NodeJS vhost entry for given \$username and \$domain"
+    echo
+    BOLD_WHITE
+    printf " -ca \$rootpass \$new-username \$new-domain \$new-userpass \$contact-email) "
+    WHITE
+    echo "creates a cpanel user account using the variables passed to it"
+    YELLOW
+    echo "(Note- only the variables listed will be accepted, and they are all required)"
+    echo
+    printf "\n\n"
+    exit 0
+}
+
+# Propaganda splash screen - with flair if the server has figlet installed
+VERSION () {
+  clear
+  SEPARATOR
+  if [ "$(figlet -v | head -1 | awk '{print $2}')" = "Copyright" ]; then
+    BLUE
+    figlet NodeJS Installer
+    WHITE
+  else
+    GREEN
+    echo " NodeJS Installer"
+  fi
+  echo
+  BLUE
+  echo " A ServerGurus project."
+  WHITE
+  echo
+  echo " Version: $vers"
+  SEPARATOR
+  echo
+  exit 0
+}
+
+#----------------------#
+# END - INFO FUNCTIONS #
+#----------------------#
+
+#-----------------------------------#
+# BEGIN - NODEJS_INSTALLER FUNCTION #
+#-----------------------------------#
+
+INSTALL_NODEJS () {
+    clear
+    HEADER
+    GREEN
+    echo "Fetching NodeJS Source Files..."
+    mkdir -p /usr/local/src
+    cd /usr/local/src
+    wget -q http://nodejs.org/dist/node-latest.tar.gz
+    echo
+    echo "Extracting Source Files..."
+    tar xf node-latest.tar.gz
+    echo
+    echo "Moving Source Files into place..."
+    mv /usr/local/src/node-v* /usr/local/src/node && cd /usr/local/src/node
+    echo
+    echo "Configuring Source Files..."
+    ./configure >> nodejs_configure_log 2>&1
+    echo
+    echo "Configuration completed"
+    sleep 1
+    clear
+    HEADER
+    GREEN
+    # Create nodejs_configure_log - used to keep configure output from going to terminal
+    touch nodejs_configure_log
+    # Create nodejs_makefile_log - will also be used in progress bar for 'make' command
+    touch nodejs_makefile_log
+    # Create nodejs_makeinstall_log
+    touch nodejs_makeinstall_log
+    # Set intial and target logfile sizes for progress bar
+    MAKE_ACTUALSIZE=0
+    MAKE_TARGETSIZE=1187240
+    # Setting up 'make' progress bar function
+    echo
+    GREEN
+    echo "Compiling NodeJS from source will take a little while..."
+    echo
+    YELLOW
+    echo "Protip: Now would be a great time to grab a stimulating beverage..."
+    echo
+    sleep 3
+    WHITE
+        function MAKE_PROGRESS_BAR {
+            # Re-setting the makefile logsize into the function allows it to be updated for the progress bar
+            MAKE_ACTUALSIZE="$(wc -c < nodejs_makefile_log)"
+            # Progress Bar function math calculations
+            let PROGRESS=(${MAKE_ACTUALSIZE}*100/${MAKE_TARGETSIZE}*100)/100
+            let COMPLETED=(${PROGRESS}*4)/10
+            let REMAINING=40-$COMPLETED
+            COMPLETED=$(printf "%${COMPLETED}s")
+            REMAINING=$(printf "%${REMAINING}s")
+            # Actual print command for the progress bar
+            printf "\r      Compiling NodeJS from source : [${COMPLETED// /#}${REMAINING// / }] ${PROGRESS}%%"
+        }
+    # Running the make command in the background and sending the output into the logfile
+    make >> nodejs_makefile_log &
+    # Grabs the 'make' PID to check for completion
+    MAKE_PID=$!
+    while [ $MAKE_ACTUALSIZE -lt $MAKE_TARGETSIZE ]; do
+        sleep .5
+        clear
+        HEADER
+        BOLD_WHITE
+        MAKE_PROGRESS_BAR ${MAKE_ACTUALSIZE} ${MAKE_TARGETSIZE}
+    done
+    GREEN
+    echo
+    echo "NodeJS Source Compilation Completed"
+    echo
+    echo "Now installing NodeJS..."
+    # Can't install if it's not done 'make'ing
+    while [ "$MAKE_PID" = "$(ps -p "$MAKE_PID" | grep "$MAKE_PID" | awk '{print $1}')" ]; do
+        sleep .5
+    done
+    make install >> nodejs_makeinstall_log 2>&1
+    echo
+    GREEN
+    echo "NodeJS Installation Completed!"
+    printf "\n\n\n"
+    mv nodejs_configure_log nodejs_configure_log-"$(date +"%m-%d-%Y_%T")" && mv nodejs_configure_log* /var/log/
+    mv nodejs_makefile_log nodejs_makefile_log-"$(date +"%m-%d-%Y_%T")" && mv nodejs_makefile_log* /var/log/
+    mv nodejs_makeinstall_log nodejs_makeinstall_log-"$(date +"%m-%d-%Y_%T")" && mv nodejs_makeinstall_log* /var/log/
+    sleep 3
+    printf "Would you like to creat a NodeJS vhose entry now"
+    WHITE
+    printf " (y/n)"
+    GREEN
+    echo -n "? "
+    WHITE
+    read INSTALL_COMPLETE_CHOICE
+        case $INSTALL_COMPLETE_CHOICE in
+            Y) CREATE_NODEJS_VHOST;;
+            y) CREATE_NODEJS_VHOST;;
+            N) printf "\n\n\n"
+               RED
+               echo "Quiting..."
+               WHITE
+               printf "\n\n\n"
+               exit 0;;
+            n) printf "\n\n\n"
+               RED
+               echo "Quiting..."
+               WHITE
+               printf "\n\n\n"
+               exit 0;;
+            *) printf "\n\n\n"
+               RED
+               echo "INVALID OPTION"
+               WHITE
+               echo
+               echo "Quiting..."
+               printf "\n\n\n"
+               exit 1;;
+        esac
+}
+
+#---------------------------------#
+# END - NODEJS_INSTALLER FUNCTION #
+#---------------------------------#
+
+#-----------------------------#
+# BEGIN - ROOT PASS FUNCTIONS #
+#-----------------------------#
+
+# Get server's root password prior to actually doing anything- keeps things from getting messy if it's wrong when API Functions are used
+CHECK_RPASS () {
+    clear
+    HEADER
+    GREEN
+    printf "Please enter your server's root password"
+    WHITE
+    echo -n ":"
+    read API_PASS
+    clear
+}
+
+# Validate root password prior to actually doing anything- keeps things from getting messy if it's wrong when API Functions are used
+RPASS_VALIDATE () {
+    # Using an API call to make sure root password is correct
+    curl -sk -X GET -u root:"$API_PASS" https://"$SERVER":2087/json-api/listaccts?api.version=1 > rpasscheck
+    if [ ! -z "$(grep "error" rpasscheck)" ]; then
+        clear
+        HEADER
+        RED
+        echo "The root password entered is invalid."
+        printf "\n\n\n"
+        WHITE
+        # Quick loop option if bad root pass detected
+        read -p "Would you like to enter it again [y/n]? " RETRY
+            case ${RETRY:0:1} in
+                y|Y )
+                    echo
+                    echo "Restarting..."
+                    echo
+                    sleep 1
+                    CHECK_RPASS;;
+                * )
+                    RED
+                    echo
+                    echo "Exiting..."
+                    WHITE
+                    sleep 1
+                    clear
+                    printf "\n\n\n";;
+            esac
+    else
+        clear
+        HEADER
+        GREEN
+        echo "Root password accepted."
+        RPASS_VALIDATED=YES
+        WHITE
+        sleep 1
+    fi
+    # Remove temporary password verification file
+    rm -rf rpasscheck
+}
+
+#---------------------------#
+# END - ROOT PASS FUNCTIONS #
+#---------------------------#
+
+#------------------------------------#
+# BEGIN - ACCOUNT CREATION FUNCTIONS #
+#------------------------------------#
+
+# Needs REGEX checks for email entry and domain entry - not for validity, just for form.
+# Once those checks are in place, this can be shortened- it was laid out this way
+# so that every entry was staring the user in the face, so they can spot entry errors
+# ahead of time
+
+# Also needs subdomain option added for NodeJS_Installer
+
+CREATE_ACCT () {
+    cat > create_acct_template << EndOfCreateAcctTemplateFile
+    Domain Name:   NewDomainName
+    User Name:     NewUserName
+    User Password: NewPassword
+    Dedicated IP:  Y/N
+    User Email:    UserEmail
+    Use DKIM:      Y/N
+    Use SPF:       Y/N
+    EndOfCreateAcctTemplateFile
+    clear
+    HEADER
+    GREEN
+    printf "Create a new cPanel account"
+    WHITE
+    printf " (Y/n)"
+    GREEN
+    echo -n "? "
+    read C_A_CHOICE
+    if [ -z "$C_A_CHOICE" ] || [ "$C_A_CHOICE" = "Y" ] || [ "$C_A_CHOICE" = "y" ]; then
+        printf "\n\n"
+        GREEN
+        printf "Please enter the new "
+        WHITE
+        printf "cPanel Account Username"
+        GREEN
+        echo -n ": "
+        WHITE
+        read NEW_USER_NAME
+        if [ "$NEW_USER_NAME" = "$(echo $(grep $NEW_USER_NAME /etc/trueuserdomains | awk '{print $2}'))" ]; then
+            clear
+            HEADER
+            YELLOW
+            printf "The cPanel account username "
+            RED
+            printf "%s" "$NEW_USER_NAME"
+            YELLOW
+            printf " already exists on this server."
+            printf "\n\n"
+            GREEN
+            echo "You'll need to choose another username for the account."
+            echo
+            WHITE
+            echo "Restarting Account Creation..."
+            sleep 2
+            CREATE_ACCT
+        else
+            sed -i "s|NewUserName|$NEW_USER_NAME|" create_acct_template
+            clear
+            HEADER
+            GREEN
+            printf "Please enter the new cPanel account username:         "
+            WHITE
+            echo "$NEW_USER_NAME"
+            echo
+            GREEN
+            printf "Please enter the account's "
+            WHITE
+            printf "Domain Name"
+            GREEN
+            echo -n ": "
+            WHITE
+            read NEW_DOMAIN_NAME
+            if [ "$NEW_DOMAIN_NAME" = "$(grep $NEW_DOMAIN_NAME /usr/local/apache/conf/httpd.conf | grep -m 1 "ServerName $NEW_DOMAIN_NAME" | awk '{print $2}')" ]; then
+                clear
+                HEADER
+                YELLOW
+                printf "The domain "
+                RED
+                printf "%s" "$NEW_DOMAIN_NAME"
+                YELLOW
+                printf " already exists on this server."
+                printf "\n\n"
+                GREEN
+                echo "You'll need to choose another domain for the account."
+                echo
+                WHITE
+                echo "Restarting Account Creation..."
+                sleep 2
+                CREATE_ACCT
+            else
+                sed -i "s|NewDomainName|$NEW_DOMAIN_NAME|" create_acct_template
+                clear
+                HEADER
+                GREEN
+                printf "Please enter the new cPanel account username:         "
+                WHITE
+                echo "$NEW_USER_NAME"
+                echo
+                GREEN
+                printf "Please enter the account's Domain Name:               "
+                WHITE
+                echo "$NEW_DOMAIN_NAME"
+                echo
+            fi
+        fi
+        GREEN
+        printf "Please enter the account's "
+        WHITE
+        printf "Password"
+        GREEN
+        echo -n ": "
+        WHITE
+        read NEW_PASSWORD
+        sed -i "s|NewPassword|$NEW_PASSWORD|" create_acct_template
+        clear
+        HEADER
+        GREEN
+        printf "Please enter the new cPanel account username:          "
+        WHITE
+        echo "$NEW_USER_NAME"
+        echo
+        GREEN
+        printf "Please enter the account's Domain Name:                "
+        WHITE
+        echo "$NEW_DOMAIN_NAME"
+        echo
+        GREEN
+        printf "Please enter the account's Password:                   "
+        WHITE
+        echo "$NEW_PASSWORD"
+        echo
+        GREEN
+        printf "Please enter the "
+        WHITE
+        printf "Contact Email Account"
+        GREEN
+        echo -n ": "
+        WHITE
+        read USEREMAIL
+        USER_EMAIL="$USEREMAIL"
+        sed -i "s|User Email:    UserEmail|User Email:    $USEREMAIL|" create_acct_template
+        clear
+        HEADER
+        GREEN
+        printf "Please enter the new cPanel account username:          "
+        WHITE
+        echo "$NEW_USER_NAME"
+        echo
+        GREEN
+        printf "Please enter the account's Domain Name:                "
+        WHITE
+        echo "$NEW_DOMAIN_NAME"
+        echo
+        GREEN
+        printf "Please enter the account's Password:                   "
+        WHITE
+        echo "$NEW_PASSWORD"
+        echo
+        GREEN
+        printf "Please enter the contact Email Account:                "
+        WHITE
+        echo "$USER_EMAIL"
+        echo
+        GREEN
+        printf "Will the account use "
+        WHITE
+        printf "DKIM"
+        GREEN
+        echo -n "? "
+        WHITE
+        read use_dkim
+        if [ "$use_dkim" = "Y" ] || [ "$use_dkim" = "y" ] || [ "$use_dkim" = "Yes" ] || [ "$use_dkim" = "yes" ]; then
+            USE_DKIM=1
+            dkim=Yes
+        else
+            USE_DKIM=0
+            dkim=No
+        fi
+        sed -i "s|Use DKIM:      Y/N|Use DKIM:      $dkim|" create_acct_template
+        clear
+        HEADER
+        GREEN
+        printf "Please enter the new cPanel account username:          "
+        WHITE
+        echo "$NEW_USER_NAME"
+        echo
+        GREEN
+        printf "Please enter the account's Domain Name:                "
+        WHITE
+        echo "$NEW_DOMAIN_NAME"
+        echo
+        GREEN
+        printf "Please enter the account's Password:                   "
+        WHITE
+        echo "$NEW_PASSWORD"
+        echo
+        GREEN
+        printf "Please enter the contact Email Account:                "
+        WHITE
+        echo "$USER_EMAIL"
+        echo
+        GREEN
+        printf "Use DKIM:                                              "
+        WHITE
+        echo "$dkim"
+        echo
+        GREEN
+        printf "Will the account use "
+        WHITE
+        printf "SPF"
+        GREEN
+        echo -n "? "
+        WHITE
+        read use_spf
+        if [ "$use_spf" = "Y" ] || [ "$use_spf" = "y" ] || [ "$use_spf" = "Yes" ] || [ "$use_spf" = "yes" ]; then
+            USE_SPF=1
+            spf=Yes
+        else
+            USE_SPF=0
+            spf=No
+        fi
+        sed -i "s|Use SPF:       Y/N|Use SPF:       $spf|" create_acct_template
+        clear
+        HEADER
+        GREEN
+        echo "Please check the Account Creation details below for errors:"
+        WHITE
+        echo
+        cat create_acct_template
+        echo
+        GREEN
+        printf "Are the details correct "
+        WHITE
+        printf "(Y/n)"
+        GREEN
+        echo -n "? "
+        WHITE
+        read DETAILS
+        if [ -z "$DETAILS" ] || [ "$DETAILS" = "Y" ] || [ "$DETAILS" = "y" ]; then
+            if [ "$RPASS_VALIDATED" = "NO" ]; then
+                CHECK_RPASS
+                RPASS_VALIDATE
+            else
+                clear
+                HEADER
+            fi
+            GREEN
+            echo "Account Creation using WHM API in process..."
+            curl -sk -X GET -u root:"$API_PASS" "https://$SERVER:2087/json-api/createacct?api.version=1&username=$NEW_USER_NAME&domain=$NEW_DOMAIN_NAME&password=$NEW_PASSWORD&contactemail=$USER_EMAIL&dkim=$USE_DKIM&spf=$USE_SPF" >> account_creation_results_"$NEW_USER_NAME"
+            if [ -z "$(grep success account_creation_results_$NEW_USER_NAME)" ]; then
+                clear
+                HEADER
+                RED
+                echo "--------"
+                echo "WARNING!"
+                echo "--------"
+                echo
+                echo "WHM API Account Creation failed."
+                echo
+                WHITE
+                echo "Review the 'account_creation_results_$NEW_USER_NAME' log in /root/support/scripts/NodeJS_Installer_logs"
+                echo "for more details."
+                echo
+                echo "Manual account creation is required."
+                RED
+                echo
+                echo "Exiting..."
+                printf "\n\n\n\n"
+                mkdir -p /root/support/scripts/NodeJS_Installer_logs
+                mv account_creation_results_"$NEW_USER_NAME" /root/support/scripts/NodeJS_Installer_logs/
+                rm -rf create_acct_template
+            else
+                clear
+                HEADER
+                GREEN
+                echo "WHM API Account Creation Completed."
+                rm -rf account_creation_results
+                sleep 2
+                echo
+                echo "Returning to main menu..."
+                sleep 1
+                GET_INSTRUCTIONS
+            fi
+        else
+            clear
+            HEADER
+            YELLOW
+            echo "Account Creation details invalidated by user"
+            echo
+            GREEN
+            echo "Restarting Account Creation..."
+            sleep 2
+            rm -rf create_acct_template
+            CREATE_ACCT
+        fi
+    else
+        clear
+        HEADER
+        RED
+        echo "'Create New Account' option cancelled."
+        echo
+        echo "Exiting now..."
+        rm -rf create_acct_template
+        sleep 2
+        clear
+        printf "\n\n\n"
+        exit 1
+    fi
+}
+
+CREATE_SUBDOMAIN () {
+    clear
+    HEADER
+    GREEN
+    echo "Hi! Still working on this part!"
+    echo
+    echo "Check back later!"
+    sleep 1
+    GET_INSTRUCTIONS
+}
+
+CHECK_TEMPLATE () {
+    clear
+    HEADER
+    GREEN
+    echo "Checking for template file..."
+    sleep 1
+    if [ ! -f /usr/local/src/node/vhost_templates/template.file ]; then
+        echo
+        YELLOW
+        echo "Template file not found"
+        sleep 1
+        GREEN
+        echo
+        echo "Fetching template..."
+        sleep 1
+        mkdir -p /usr/local/src/node/vhost_templates
+        cd /usr/local/src/node/vhost_templates
+        wget -q http://nobits.ml/Downloads/template.file
+        echo
+        echo "Template file obtained"
+        sleep 1
+    else
+        echo
+        echo "Template file found"
+        sleep 1
+    fi
+}
+
+GET_NODEJS_VHOST_INFO () {
+    CHECK_TEMPLATE
+    clear
+    HEADER
+    GREEN
+    echo "Preparing domain list for NodeJS vhost creation..."
+    sleep 1
+    CLEARLINE
+    SEPARATOR
+    WHITE
+    grep ':' /etc/userdomains | grep -v nobody | awk '{print $1}' | cut -d ':' -f 1 | sort > domainlist
+    # Sed command to add line numbers to the list of available domains/subdomains
+    sed = domainlist | sed 'N;s/\n/\t/' > domainchoices
+    cat domainchoices
+    SEPARATOR
+    echo
+    # Giving them a quick out
+    echo -n "Select Domain for NodeJS vhost creation [q for quit]? "
+    read DOMAIN_CHOICE
+    # Can probably be shortened further
+    if [ "$DOMAIN_CHOICE" = "Q" ] || [ "$DOMAIN_CHOICE" = "q" ]; then
+        printf "\n\n"
+        RED
+        echo "Quiting..."
+        rm -rf domainlist domainchoices
+        WHITE
+        sleep 1
+        clear
+        printf "\n\n\n"
+        exit 1
+    else
+        # Loop the script if an invalid choice is given
+        if ! [[ $DOMAIN_CHOICE =~ $NC ]]; then
+            clear
+            HEADER
+            echo
+            RED
+            echo "\"$DOMAIN_CHOICE\" is not a valid selection."
+            echo
+            GREEN
+            printf "View the list and choose again"
+            WHITE
+            printf " (y/n)"
+            GREEN
+            echo -n "? "
+            WHITE
+            read VIEW_LIST_CHOICE
+                case $VIEW_LIST_CHOICE in
+                    Y) CREATE_NODEJS_VHOST;;
+                    y) CREATE_NODEJS_VHOST;;
+                    N) printf "\n\n"
+                       RED
+                       echo "Quiting..."
+                       rm -rf domainlist domainchoices
+                       WHITE
+                       sleep 1
+                       clear
+                       printf "\n\n\n"
+                       exit 1;;
+                    n) printf "\n\n"
+                       RED
+                       echo "Quiting..."
+                       rm -rf domainlist domainchoices
+                       WHITE
+                       sleep 1
+                       clear
+                       printf "\n\n\n"
+                       exit 1;;
+                    *) printf "\n\n"
+                       RED
+                       echo "Quiting..."
+                       rm -rf domainlist domainchoices
+                       WHITE
+                       sleep 1
+                       clear
+                       printf "\n\n\n"
+                       exit 1;;
+                esac
+        else
+            # Setting 1st match (-m 1) ensures $ doesn't confuse grep when there's also $$, $$$, $$$$, etc
+            VHOST_DOMAIN="$(grep -m 1 "$DOMAIN_CHOICE" domainchoices | awk '{print $2}')"
+            VHOST_USER="$(grep "$VHOST_DOMAIN" /etc/userdomains | tail -1 | awk '{print $2}')"
+            rm -rf domainlist domainchoices
+            CREATE_VHOST
+        fi
+    fi
+}
+
+CREATE_VHOST () {
+    clear
+    HEADER
+    GREEN
+    echo "Getting httpd version information..."
+    sleep 1
+    if [[ "$(httpd -v | head -1 | sed -e 's|/| |' | awk '{print $4}' | cut -d '.' -f -2)" == "2.4" ]]; then
+        echo
+        echo "Version 2.4.x identified"
+        echo
+        echo "Creating user template file directory..."
+        sleep 1
+        mkdir -p /usr/local/apache/conf/userdata/std/2_4/"$VHOST_USER"/"$VHOST_DOMAIN"
+        cp /usr/local/src/node/vhost_templates/template.file /usr/local/apache/conf/userdata/std/2_4/"$VHOST_USER"/"$VHOST_DOMAIN"/template.file
+        echo
+        echo "Template file placed in target directory"
+    else
+        echo
+        echo "Version 2.2.x identified"
+        echo
+        echo "Creating user template file directory..."
+        sleep 1
+        /usr/local/apache/conf/userdata/std/2_2/"$VHOST_USER"/"$VHOST_DOMAIN"
+        cp /usr/local/src/node/vhost_templates/template.file /usr/local/apache/conf/userdata/std/2_2/"$VHOST_USER"/"$VHOST_DOMAIN"/template.file
+        echo
+        echo "Template file placed in target directory"
+    fi
+    sleep 1
+    clear
+    HEADER
+    GREEN
+    echo "Generating NodeJS vhost entry..."
+    echo
+    SEPARATOR
+    perl -MYAML::Syck -e 'my $hr = YAML::Syck::LoadFile($ARGV[0]);$hr->{$ARGV[1]} = $ARGV[2];YAML::Syck::DumpFile($ARGV[0],$hr);' /var/cpanel/userdata/"$VHOST_USER"/"$VHOST_DOMAIN" custom_vhost_template_ap2 # $TEMPLATEFILE
+    /usr/local/cpanel/3rdparty/bin/perl /scripts/rebuildhttpdconf
+    service httpd restart
+    SEPARATOR
+    sleep 2
+    clear
+    HEADER
+    GREEN
+    echo "NodeJS vhost creation for user $VHOST_USER with domain $VHOST_DOMAIN has been completed"
+    printf "\n\n\n"
+    sleep 2
+    echo "Returning to main menu..."
+    sleep 1
+    GET_INSTRUCTIONS
+}
+
+#----------------------------------#
+# END - ACCOUNT CREATION FUNCTIONs #
+#----------------------------------#
+
+#---------------------------------------------------#
+# BEGIN - FLOW CONTROL, CHECKS, & WARNING FUNCTIONS #
+#---------------------------------------------------#
+
+GET_INSTRUCTIONS () {
+    clear
+    HEADER
+    GREEN
+    echo "Which operation will be performed?"
+    echo
+    printf "1) "
+    WHITE
+    echo "Install NodeJS"
+    GREEN
+    echo
+    printf "2) "
+    WHITE
+    echo "Create a cPanel Account"
+    GREEN
+    echo
+    printf "3) "
+    WHITE
+    echo "Create a subdomain"
+    GREEN
+    echo
+    printf "4) "
+    WHITE
+    echo "Create a NodeJS vhost entry"
+    echo
+    YELLOW
+    echo "[ Q to quit ]"
+    WHITE
+    printf "\n\n\n"
+    echo -n "[enter selection]: "
+    read INSTRUCTION_CHOICE
+        case $INSTRUCTION_CHOICE in
+            1) INSTALL_NODEJS;;
+            2) CREATE_ACCT;;
+            3) CREATE_SUBDOMAIN;;
+            4) GET_NODEJS_VHOST_INFO;;
+            Q) clear
+               HEADER
+               RED
+               echo "Quiting..."
+               sleep 1
+               printf "\n\n\n"
+               exit 0;;
+            q) clear
+               HEADER
+               RED
+               echo "Quiting..."
+               sleep 1
+               printf "\n\n\n"
+               exit 0;;
+            *) clear
+               HEADER
+               RED
+               echo "INVALID SELECTION"
+               echo
+               WHITE
+               echo "Restarting..."
+               sleep 1
+               GET_INSTRUCTIONS;;
+        esac
+}
+
+#-------------------------------------------------#
+# END - FLOW CONTROL, CHECKS, & WARNING FUNCTIONS #
+#-------------------------------------------------#
+
+############################
+##------------------------##
+## END - SCRIPT FUNCTIONS ##
+##------------------------##
+############################
+
+#############################################
+##-----------------------------------------##
+## BEGIN - MAKE SURE WE'RE RUNNING AS ROOT ##
+##-----------------------------------------##
+#############################################
+
+if [ "$(id -u)" != "0" ]; then
+    RED
+    echo
+    echo "--------"
+    echo "WARNING!"
+    echo "--------"
+    echo
+    WHITE
+    echo "NodeJS_Installer must be run as root"
+    echo "(Exiting now...)"
+    printf "\n\n\n\n"
+    exit 1
+fi
+
+###########################################
+##---------------------------------------##
+## END - MAKE SURE WE'RE RUNNING AS ROOT ##
+##---------------------------------------##
+###########################################
+
+#########################
+##---------------------##
+## BEGIN - CORE SCRIPT ##
+##---------------------##
+#########################
+
+if [ -z "$1" ]; then
+    GET_INSTRUCTIONS
+else
+    case "$1" in
+        -v) VERSION;;
+        -h) HELPTEXT;;
+       -cv) VHOST_USER="$2"
+            VHOST_DOMAIN="$3"
+            if [ "$VHOST_USER" != "$(grep -m 1 "$VHOST_USER" /etc/userdomains | awk '{print $2}')" ]; then
+                clear
+                HEADER
+                RED
+                echo "INVALID OPTIONS PASSED"
+                sleep 2
+                HELPTEXT
+            elif [ "$VHOST_DOMAIN" != "$(grep "$VHOST_DOMAIN" /etc/userdomains | tail -1 | sed -e 's/:/ /' | awk '{print $1}')" ]; then
+                clear
+                HEADER
+                RED
+                echo "INVALID OPTIONS PASSED"
+                sleep 2
+                WHITE
+                HELPTEXT
+            else
+                CHECK_TEMPLATE
+                CREATE_VHOST
+            fi;;
+       -ca) API_PASS="$2"
+            NEW_USER_NAME="$3"
+            NEW_DOMAIN_NAME="$4"
+            NEW_PASSWORD="$5"
+            USER_EMAIL="$6"
+            if [ "$NEW_USER_NAME" = "$(grep -m 1 "$NEW_USER_NAME" /etc/userdomains | awk '{print $2}')" ]; then
+                clear
+                HEADER
+                RED
+                echo "cPanel user already exists on server"
+                WHITE
+                sleep 2
+                HELPTEXT
+            elif [ "$NEW_DOMAIN_NAME" = "$(grep "$NEW_DOMAIN_NAME" /etc/userdomains | tail -1 | sed -e 's/:/ /' | awk '{print $1}')" ]; then
+                clear
+                HEADER
+                RED
+                echo "Domain already exists on server"
+                WHITE
+                sleep 2
+                HELPTEXT
+            else
+                GREEN
+                echo
+                echo "Attempting to create cPanel account using WHM API..."
+                echo
+                curl -sk -X GET -u root:"$API_PASS" "https://$SERVER:2087/json-api/createacct?api.version=1&username=$NEW_USER_NAME&domain=$NEW_DOMAIN_NAME&password=$NEW_PASSWORD&contactemail=$USER_EMAIL" >> account_creation_results_"$NEW_USER_NAME"
+                if [ -z "$(grep success account_creation_results_$NEW_USER_NAME)" ]; then
+                    clear
+                    HEADER
+                    RED
+                    echo "--------"
+                    echo "WARNING!"
+                    echo "--------"
+                    echo
+                    echo "WHM API Account Creation failed."
+                    echo
+                    WHITE
+                    echo "Review the 'account_creation_results_$NEW_USER_NAME' log in /var/log/"
+                    echo "for more details."
+                    echo
+                    echo "Manual account creation is required."
+                    RED
+                    echo
+                    echo "Exiting..."
+                    WHITE
+                    printf "\n\n\n\n"
+                    mv account_creation_results_"$NEW_USER_NAME" /var/log/
+                    exit 1
+                else
+                    clear
+                    HEADER
+                    GREEN
+                    echo "WHM API Account Creation Completed."
+                    rm -rf account_creation_results
+                    sleep 2
+                    WHITE
+                    printf "/n/n"
+                    exit 0
+                fi
+            fi;;
+
+         *) clear
+            HEADER
+            GREEN
+            echo "Hi! Still working on this part!"
+            echo
+            echo "Try again later!"
+            sleep 1
+            GET_INSTRUCTIONS;;
+    esac
+fi
+
+#######################
+##-------------------##
+## END - CORE SCRIPT ##
+##-------------------##
+#######################
+
+#-----------------------------------------------#
+# BEGIN - POST SCRIPT NOTES & POSSIBLY USEFULLS #
+#-----------------------------------------------#
+
+#---------------------------------------------#
+# END - POST SCRIPT NOTES & POSSIBLY USEFULLS #
+#---------------------------------------------#
