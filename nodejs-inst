@@ -1044,6 +1044,7 @@ else
             NEW_PASSWORD="$5"
             USER_EMAIL="$6"
             if [ "$NEW_USER_NAME" = "$(grep -m 1 "$NEW_USER_NAME" /etc/userdomains | awk '{print $2}')" ]; then
+                sleep 1
                 clear
                 HEADER
                 RED
@@ -1052,6 +1053,7 @@ else
                 sleep 2
                 HELPTEXT
             elif [ "$NEW_DOMAIN_NAME" = "$(grep "$NEW_DOMAIN_NAME" /etc/userdomains | tail -1 | sed -e 's/:/ /' | awk '{print $1}')" ]; then
+                sleep 1 
                 clear
                 HEADER
                 RED
