@@ -1,0 +1,78 @@
+<html>
+
+	<head>
+
+		<title>ServerGur.us Pastebin</title>
+
+		<link rel="stylesheet" type="text/css" href="solarized_dark.css"/>
+		<link rel="stylesheet" type="text/css" href="application.css"/>
+
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script type="text/javascript" src="highlight.min.js"></script>
+		<script type="text/javascript" src="application.min.js"></script>
+
+		<meta name="robots" content="noindex,nofollow"/>
+
+		<script type="text/javascript">
+			var app = null;
+			// Handle pops
+			var handlePop = function(evt) {
+				var path = evt.target.location.pathname;
+				if (path === '/') { app.newDocument(true); }
+				else { app.loadDocument(path.substring(1, path.length)); }
+			};
+			// Set up the pop state to handle loads, skipping the first load
+			// to make chrome behave like others:
+			// http://code.google.com/p/chromium/issues/detail?id=63040
+			setTimeout(function() {
+				window.onpopstate = function(evt) {
+					try { handlePop(evt); } catch(err) { /* not loaded yet */ }
+				};
+			}, 1000);
+			// Construct app and load initial path
+			$(function() {
+				app = new haste('ServerGur.us Pastebin', { twitter: false });
+				handlePop({ target: window });
+			});
+		</script>
+
+	</head>
+
+	<body>
+		<ul id="messages"></ul>
+
+		<div id="key">
+		  <div id="pointer" style="display:none;"></div>
+			<div id="box1">
+				<a href="/about.md" class="logo"></a>
+			</div>
+			<div id="box2">
+				<div class="save function"></div>
+				<div class="new function"></div>
+				<div class="duplicate function"></div>
+				<div class="raw function"></div>
+				<div class="twitter function"></div>
+			</div>
+			<div id="box3" style="display:none;">
+				<div class="label"></div>
+				<div class="shortcut"></div>
+			</div>
+		</div>
+
+		<div id="linenos"></div>
+		<pre id="box" style="display:none;" tabindex="0"><code></code></pre>
+		<textarea spellcheck="false" style="display:none;"></textarea>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-50081033-20', 'servergur.us');
+  ga('send', 'pageview');
+
+</script>
+
+	</body>
+
+</html>
