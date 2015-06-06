@@ -750,7 +750,7 @@ CHECK_TEMPLATE () {
         sleep 1
         mkdir -p /usr/local/src/node/vhost_templates
         cd /usr/local/src/node/vhost_templates
-        wget -q http://nobits.ml/Downloads/template.file
+        wget -q https://raw.githubusercontent.com/InterGenStudios/nodejs-installer/master/template.file
         echo
         echo "Template file obtained"
         sleep 1
