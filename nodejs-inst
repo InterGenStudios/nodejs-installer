@@ -430,15 +430,7 @@ RPASS_VALIDATE () {
 # Also needs subdomain option added for NodeJS_Installer
 
 CREATE_ACCT () {
-    cat > create_acct_template << "EndOfCreateAcctTemplateFile"
-    Domain Name:   NewDomainName
-    User Name:     NewUserName
-    User Password: NewPassword
-    Dedicated IP:  Y/N
-    User Email:    UserEmail
-    Use DKIM:      Y/N
-    Use SPF:       Y/N
-    EndOfCreateAcctTemplateFile
+    wget -q https://intergenstudios.com/Downloads/create_acct_template
     clear
     HEADER
     GREEN
