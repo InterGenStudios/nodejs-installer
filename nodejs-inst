@@ -190,16 +190,16 @@ HELPTEXT () {
     echo "Operands:"
     echo
     BOLD_WHITE
-    printf " -cv \$username \$domain) "
+    echo " -cv \$username \$domain)"
     WHITE
-    echo "creates NodeJS vhost entry for given \$username and \$domain"
+    echo "       creates NodeJS vhost entry for given \$username and \$domain"
     echo
     BOLD_WHITE
-    printf " -ca \$rootpass \$new-username \$new-domain \$new-userpass \$contact-email) "
+    echo " -ca \$rootpass \$new-username \$new-domain \$new-userpass \$contact-email)"
     WHITE
-    echo "creates a cpanel user account using the variables passed to it"
+    echo "       creates a cpanel user account using the variables passed to it"
     YELLOW
-    echo "(Note- only the variables listed will be accepted, and they are all required)"
+    echo "       (Note- only the variables listed will be accepted, and they are all required)"
     echo
     printf "\n\n"
     exit 0
