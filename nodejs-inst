@@ -403,7 +403,11 @@ CHECK_RPASS () {
     read API_PASS
     stty echo
     echo " "
+    sleep 1
     clear
+    HEADER
+    GREEN
+    echo "Validating root password..."
 }
 
 # Validate root password prior to actually doing anything- keeps things from getting messy if it's wrong when API Functions are used
