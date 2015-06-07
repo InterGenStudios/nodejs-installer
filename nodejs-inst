@@ -1372,36 +1372,40 @@ else
                     clear
                     HEADER
                     GREEN
-                    CPANEL_USER="$(grep "$MAINDOMAIN" /etc/trueuserdomains | awk '{print $2}')"
-                    echo "Attempting to create Subdomain using WHM API"
+                    echo "Root password has been validated, proceeding."
+                fi
+                clear
+                HEADER
+                GREEN
+                CPANEL_USER="$(grep "$MAINDOMAIN" /etc/trueuserdomains | awk '{print $2}')"
+                echo "Attempting to create Subdomain using WHM API"
+                echo
+                echo "Stand by..."
+                curl -sk -X GET -u root:"$API_PASS" "https://$SERVER:2087//json-api/cpanel?cpanel_jsonapi_user=$CPANEL_USER&cpanel_jsonapi_apiversion=2&cpanel_jsonapi_module=SubDomain&cpanel_jsonapi_func=addsubdomain&domain=$SUBDOMAIN&rootdomain=$MAINDOMAIN" > subdomain_creation_log
+                if [ -n "$(grep "error" subdomain_creation_log)" ]; then
+                    clear
+                    HEADER
+                    RED
+                    echo "Subdomain creation failed"
                     echo
-                    echo "Stand by..."
-                    curl -sk -X GET -u root:"$API_PASS" "https://$SERVER:2087//json-api/cpanel?cpanel_jsonapi_user=$CPANEL_USER&cpanel_jsonapi_apiversion=2&cpanel_jsonapi_module=SubDomain&cpanel_jsonapi_func=addsubdomain&domain=$SUBDOMAIN&rootdomain=$MAINDOMAIN" > subdomain_creation_log
-                    if [ -n "$(grep "error" subdomain_creation_log)" ]; then
-                        clear
-                        HEADER
-                        RED
-                        echo "Subdomain creation failed"
-                        echo
-                        echo "Review the $SUBDOMAIN_subdomain_creation_log at /var/log for more information"
-                        echo
-                        WHITE
-                        echo "Manual Subdomain creation is required"
-                        mv subdomain_creation_log /var/log/"$SUBDOMAIN"_subdomain_creation_log
-                        printf "\n\n\n"
-                        exit 1
-                    else
-                        clear
-                        HEADER
-                        GREEN
-                        echo "Subdomain creation completed"
-                        sleep 2
-                        echo
-                        echo "Returning to main menu"
-                        sleep 1
-                        rm subdomain_creation_log
-                        GET_INSTRUCTIONS
-                    fi
+                    echo "Review the $SUBDOMAIN_subdomain_creation_log at /var/log for more information"
+                    echo
+                    WHITE
+                    echo "Manual Subdomain creation is required"
+                    mv subdomain_creation_log /var/log/"$SUBDOMAIN"_subdomain_creation_log
+                    printf "\n\n\n"
+                    exit 1
+                else
+                    clear
+                    HEADER
+                    GREEN
+                    echo "Subdomain creation completed"
+                    sleep 2
+                    echo
+                    echo "Returning to main menu"
+                    sleep 1
+                    rm subdomain_creation_log
+                    GET_INSTRUCTIONS
                 fi
             fi;;
          *) clear
