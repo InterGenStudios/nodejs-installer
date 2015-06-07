@@ -923,7 +923,8 @@ CREATE_SUBDOMAIN () {
                     echo
                     WHITE
                     echo "Manual Subdomain creation is required"
-                    mv subdomain_creation_log /var/log/"$SUBDOMAIN"_subdomain_creation_log
+                    mkdir -p /var/log/nodejs_installer_logs
+                    mv subdomain_creation_log /var/log/nodejs_installer_logs/"$SUBDOMAIN"_subdomain_creation_log_"$(date +"%m-%d-%Y_%T")"
                     printf "\n\n\n"
                     exit 1
                 else
@@ -935,7 +936,8 @@ CREATE_SUBDOMAIN () {
                     echo
                     echo "Returning to main menu"
                     sleep 1
-                    rm subdomain_creation_log
+                    mkdir -p /var/log/nodejs_installer_logs
+                    mv subdomain_creation_log /var/log/nodejs_installer_logs/"$SUBDOMAIN"_subdomain_creation_log_"$(date +"%m-%d-%Y_%T")"
                     GET_INSTRUCTIONS
                 fi
             fi
@@ -1399,7 +1401,8 @@ else
                     echo
                     WHITE
                     echo "Manual Subdomain creation is required"
-                    mv subdomain_creation_log /var/log/"$SUBDOMAIN"_subdomain_creation_log
+                    mkdir -p /var/log/nodejs_installer_logs
+                    mv subdomain_creation_log /var/log/nodejs_installer_logs/"$SUBDOMAIN"_subdomain_creation_log_"$(date +"%m-%d-%Y_%T")"
                     printf "\n\n\n"
                     exit 1
                 else
@@ -1411,7 +1414,8 @@ else
                     echo
                     echo "Returning to main menu"
                     sleep 1
-                    rm subdomain_creation_log
+                    mkdir -p /var/log/nodejs_installer_logs
+                    mv subdomain_creation_log /var/log/nodejs_installer_logs/"$SUBDOMAIN"_subdomain_creation_log_"$(date +"%m-%d-%Y_%T")"
                     GET_INSTRUCTIONS
                 fi
             fi;;
