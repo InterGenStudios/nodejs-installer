@@ -214,6 +214,8 @@ HELPTEXT () {
     echo " -cv \$username \$domain"
     WHITE
     echo "     creates NodeJS vhost entry for given \$username and \$domain"
+    YELLOW
+    echo "    (Note- only the variables listed will be accepted, and they are required)"
     echo
     BOLD_WHITE
     echo " -ca \$new-username \$new-domain \$new-userpass \$contact-email"
@@ -227,8 +229,8 @@ HELPTEXT () {
     WHITE
     echo "     creates a cpanel account subdomain using the variables passed to it"
     YELLOW
-    echo "    (Note- only the variables listed will be accepted, and they are all required)"
-    echo "    (Note- only enter the subdomain prefix for '\$subdomain' - ie just 'subdomain', not 'subdomain.maindomain.com')"
+    echo "    (Note- only the variables listed will be accepted, and they are required)"
+    echo "    (Note- only enter the subdomain prefix for '\$subdomain', not 'subdomain.maindomain.com')"
     echo
     printf "\n\n"
     exit 0
