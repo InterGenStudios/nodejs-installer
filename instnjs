@@ -156,6 +156,16 @@ bashtrap () {
     printf "\n\n"
     echo "CTRL+C detected in terminal... halting installation..."
     kill "$instnjs_pid"
+    if [ -n $MAKE_PID ]; then
+        kill "$MAKE_PID"
+        echo
+        echo "Makefile terminated"
+        echo
+    else
+        echo
+        echo "Makefile not running..."
+        echo
+    fi
     WHITE
     echo
     echo "Removing any downloaded files..."
