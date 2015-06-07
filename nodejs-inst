@@ -767,7 +767,7 @@ CREATE_SUBDOMAIN () {
     SEPARATOR
     echo
     # Giving them a quick out
-    echo -n "Select Domain target for Subdomain creation [q for quit]? "
+    echo -n "Select Domain target for Subdomain creation [q for quit]: "
     read DOMAIN_CHOICE
     # Can probably be shortened further
     if [ "$DOMAIN_CHOICE" = "Q" ] || [ "$DOMAIN_CHOICE" = "q" ]; then
