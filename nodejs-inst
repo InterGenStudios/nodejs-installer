@@ -158,7 +158,9 @@ bashtrap () {
     if [ "$NODE_FILES_DOWNLOADED" = "YES" ]; then
         rm -rf /usr/local/src/node-*
         sleep 1
+        echo
     else
+        echo
         sleep 1
         echo "Removing any extracted tar packages..."
         if [ "$NODE_FILES_EXTRACTED" = "YES" ]; then
@@ -167,6 +169,7 @@ bashtrap () {
             printf "\n\n\n\n"
             WHITE
             echo "Exiting..."
+            printf "\n\n\n"
             exit 1
         fi
     fi
@@ -290,6 +293,8 @@ INSTALL_NODEJS () {
     clear
     HEADER
     GREEN
+    # Create the nodejs_installer log directory
+    mkdir -p /var/log/nodejs_installer_logs
     # Create nodejs_configure_log - used to keep configure output from going to terminal
     touch nodejs_configure_log
     # Create nodejs_makefile_log - will also be used in progress bar for 'make' command
@@ -307,7 +312,7 @@ INSTALL_NODEJS () {
     YELLOW
     echo "Protip: Now would be a great time to grab a stimulating beverage..."
     echo
-    sleep 3
+    sleep 4
     WHITE
         function MAKE_PROGRESS_BAR {
             # Re-setting the makefile logsize into the function allows it to be updated for the progress bar
@@ -326,7 +331,7 @@ INSTALL_NODEJS () {
     # Grabs the 'make' PID to check for completion
     MAKE_PID=$!
     while [ $MAKE_ACTUALSIZE -lt $MAKE_TARGETSIZE ]; do
-        sleep .5
+        sleep 1
         clear
         HEADER
         BOLD_WHITE
@@ -346,11 +351,11 @@ INSTALL_NODEJS () {
     GREEN
     echo "NodeJS Installation Completed!"
     printf "\n\n\n"
-    mv nodejs_configure_log nodejs_configure_log-"$(date +"%m-%d-%Y_%T")" && mv nodejs_configure_log* /var/log/
-    mv nodejs_makefile_log nodejs_makefile_log-"$(date +"%m-%d-%Y_%T")" && mv nodejs_makefile_log* /var/log/
-    mv nodejs_makeinstall_log nodejs_makeinstall_log-"$(date +"%m-%d-%Y_%T")" && mv nodejs_makeinstall_log* /var/log/
+    mv nodejs_configure_log /var/log/nodejs_installer_logs/nodejs_configure_log-"$(date +"%m-%d-%Y_%T")"
+    mv nodejs_makefile_log /var/log/nodejs_installer_logs/nodejs_makefile_log-"$(date +"%m-%d-%Y_%T")"
+    mv nodejs_makeinstall_log /var/log/nodejs_installer_logs/nodejs_makeinstall_log-"$(date +"%m-%d-%Y_%T")"
     sleep 3
-    printf "Would you like to creat a NodeJS vhose entry now"
+    printf "Would you like to creat a NodeJS vhose entry for a domain or subdomain"
     WHITE
     printf " (y/n)"
     GREEN
@@ -1335,8 +1340,8 @@ else
                 unset MAINDOMAIN SUBDOMAIN
                 CREATE_SUBDOMAIN
             else
-                echo
-                sleep 1
+                clear
+                HEADER
                 GREEN
                 printf "Create Subdomain $SUBDOMAIN.$MAINDOMAIN - correct "
                 WHITE
