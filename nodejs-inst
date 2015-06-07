@@ -995,7 +995,7 @@ GET_NODEJS_VHOST_INFO () {
     SEPARATOR
     echo
     # Giving them a quick out
-    echo -n "Select Domain for NodeJS vhost creation [q for quit]? "
+    echo -n "Select target for NodeJS vhost creation [q for quit]? "
     read DOMAIN_CHOICE
     # Can probably be shortened further
     if [ "$DOMAIN_CHOICE" = "Q" ] || [ "$DOMAIN_CHOICE" = "q" ]; then
@@ -1108,7 +1108,7 @@ CREATE_VHOST () {
     clear
     HEADER
     GREEN
-    echo "NodeJS vhost creation for user $VHOST_USER with domain $VHOST_DOMAIN has been completed"
+    echo "NodeJS vhost creation for domain $VHOST_DOMAIN has been completed"
     printf "\n\n\n"
     sleep 2
     echo "Returning to main menu..."
