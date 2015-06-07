@@ -195,7 +195,7 @@ HELPTEXT () {
     echo "USAGE: "
     echo
     WHITE
-    echo "njs-installer {(options),[operands]}"
+    echo "nji {(options),[operands]}"
     GREEN
     echo
     echo "Options:"
