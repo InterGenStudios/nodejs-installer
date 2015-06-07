@@ -195,7 +195,7 @@ HELPTEXT () {
     echo "USAGE: "
     echo
     WHITE
-    echo "nji {(options),[operands]}"
+    echo "instnjs {(options),[operands]}"
     GREEN
     echo
     echo "Options:"
