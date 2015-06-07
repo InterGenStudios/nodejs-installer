@@ -713,7 +713,7 @@ CREATE_ACCT () {
                 echo "WHM API Account Creation failed."
                 echo
                 WHITE
-                echo "Review the 'account_creation_results_$NEW_USER_NAME' log in /root/support/scripts/NodeJS_Installer_logs"
+                echo "Review the 'account_creation_results_$NEW_USER_NAME' log in /var/log/nodejs_installer_logs"
                 echo "for more details."
                 echo
                 echo "Manual account creation is required."
@@ -721,18 +721,19 @@ CREATE_ACCT () {
                 echo
                 echo "Exiting..."
                 printf "\n\n\n\n"
-                mkdir -p /root/support/scripts/NodeJS_Installer_logs
-                mv account_creation_results_"$NEW_USER_NAME" /root/support/scripts/NodeJS_Installer_logs/
+                mkdir -p /var/log/nodejs_installer_logs
+                mv account_creation_results_"$NEW_USER_NAME" /var/log/nodejs_installer_logs/account_creation_results_"$NEW_USER_NAME"_"$(date +"%m-%d-%Y_%T")"
                 rm -rf create_acct_template
             else
                 clear
                 HEADER
                 GREEN
                 echo "WHM API Account Creation Completed."
-                rm -rf account_creation_results
+                mkdir -p /var/log/nodejs_installer_logs
+                mv account_creation_results_"$NEW_USER_NAME" /var/log/nodejs_installer_logs/account_creation_results_"$NEW_USER_NAME"_"$(date +"%m-%d-%Y_%T")"
                 sleep 2
                 echo
-                echo "Returning to main menu..."
+                echo "Moving to Main Menu..."
                 sleep 1
                 GET_INSTRUCTIONS
             fi
@@ -924,7 +925,7 @@ CREATE_SUBDOMAIN () {
                     RED
                     echo "Subdomain creation failed"
                     echo
-                    echo "Review the $SUBDOMAIN_subdomain_creation_log at /var/log for more information"
+                    echo "Review the $SUBDOMAIN_subdomain_creation_log at /var/log/nodejs_installer_logs/ for more information"
                     echo
                     WHITE
                     echo "Manual Subdomain creation is required"
@@ -939,7 +940,7 @@ CREATE_SUBDOMAIN () {
                     echo "Subdomain creation completed"
                     sleep 2
                     echo
-                    echo "Returning to main menu"
+                    echo "Moving to Main Menu..."
                     sleep 1
                     mkdir -p /var/log/nodejs_installer_logs
                     mv subdomain_creation_log /var/log/nodejs_installer_logs/"$SUBDOMAIN"_subdomain_creation_log_"$(date +"%m-%d-%Y_%T")"
@@ -1111,7 +1112,7 @@ CREATE_VHOST () {
     echo "NodeJS vhost creation for domain $VHOST_DOMAIN has been completed"
     printf "\n\n\n"
     sleep 2
-    echo "Returning to main menu..."
+    echo "Moving to Main Menu..."
     sleep 1
     GET_INSTRUCTIONS
 }
@@ -1296,7 +1297,7 @@ else
                     echo "WHM API Account Creation failed."
                     echo
                     WHITE
-                    echo "Review the 'account_creation_results_$NEW_USER_NAME' log in /var/log/"
+                    echo "Review the 'account_creation_results_$NEW_USER_NAME' log in /var/log/nodejs_installer_logs/ "
                     echo "for more details."
                     echo
                     echo "Manual account creation is required."
@@ -1305,15 +1306,16 @@ else
                     echo "Exiting..."
                     WHITE
                     printf "\n\n\n"
-                    mv account_creation_results_"$NEW_USER_NAME" /var/log/
+                    mkdir -p /var/log/nodejs_installer_logs
+                    mv account_creation_results_"$NEW_USER_NAME" /var/log/nodejs_installer_logs/account_creation_results_"$NEW_USER_NAME"_"$(date +"%m-%d-%Y_%T")"
                     exit 1
                 else
                     clear
                     HEADER
                     GREEN
                     echo "WHM API Account Creation Completed."
-                    rm -rf account_creation_results
-                    sleep 2
+                    mkdir -p /var/log/nodejs_installer_logs
+                    mv account_creation_results_"$NEW_USER_NAME" /var/log/nodejs_installer_logs/account_creation_results_"$NEW_USER_NAME"_"$(date +"%m-%d-%Y_%T")"                    sleep 2
                     WHITE
                     printf "\n\n\n"
                     exit 0
@@ -1402,7 +1404,7 @@ else
                     RED
                     echo "Subdomain creation failed"
                     echo
-                    echo "Review the $SUBDOMAIN_subdomain_creation_log at /var/log for more information"
+                    echo "Review the "$SUBDOMAIN"_subdomain_creation_log at /var/log/nodejs_installer_logs/ for more information"
                     echo
                     WHITE
                     echo "Manual Subdomain creation is required"
@@ -1417,7 +1419,7 @@ else
                     echo "Subdomain creation completed"
                     sleep 2
                     echo
-                    echo "Returning to main menu"
+                    echo "Moving to Main Menu..."
                     sleep 1
                     mkdir -p /var/log/nodejs_installer_logs
                     mv subdomain_creation_log /var/log/nodejs_installer_logs/"$SUBDOMAIN"_subdomain_creation_log_"$(date +"%m-%d-%Y_%T")"
@@ -1430,7 +1432,7 @@ else
             echo "INVALID OPTION"
             echo
             WHITE
-            echo "Prepairing normal operations"
+            echo "Moving to Main Menu..."
             sleep 2
             GET_INSTRUCTIONS;;
     esac
