@@ -811,8 +811,8 @@ CREATE_SUBDOMAIN () {
             WHITE
             read VIEW_LIST_CHOICE
                 case $VIEW_LIST_CHOICE in
-                    Y) CREATE_NODEJS_VHOST;;
-                    y) CREATE_NODEJS_VHOST;;
+                    Y) CREATE_SUBDOMAIN;;
+                    y) CREATE_SUBDOMAIN;;
                     N) printf "\n\n"
                        RED
                        echo "Quiting..."
