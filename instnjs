@@ -23,6 +23,9 @@
 ##---------------------------------------##
 ###########################################
 
+# Get the PID
+instnjs_pid=$!
+
 # Regex check for numbers as choices
 NC='^[0-9]+$'
 
@@ -152,6 +155,7 @@ bashtrap () {
     RED
     printf "\n\n"
     echo "CTRL+C detected in terminal... halting installation..."
+    kill "$instnjs_pid"
     WHITE
     echo
     echo "Removing any downloaded files..."
