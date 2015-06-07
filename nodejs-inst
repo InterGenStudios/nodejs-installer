@@ -398,8 +398,11 @@ CHECK_RPASS () {
     GREEN
     printf "Please enter your server's root password"
     WHITE
-    echo -n ":"
+    echo -n ": "
+    stty -echo
     read API_PASS
+    stty echo
+    echo " "
     clear
 }
 
