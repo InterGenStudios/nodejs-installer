@@ -2,7 +2,7 @@
 
 ---
 
-### Command line NodeJS installer for CentOS 6+ servers running WHM/cPanel
+### Command line NodeJS installer for CentOS 6+ WHM/cPanel servers
 ---
 
 Server root pass is required for use
