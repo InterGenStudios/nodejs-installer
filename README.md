@@ -1,6 +1,5 @@
 ![alt text](https://intergenstudios.com/Downloads/njs.png "NodeJS Installer")
 
-#**NodeJS Installer**
 ---
 
 ### Command line NodeJS installer for CentOS 6+ servers running WHM/cPanel
