@@ -7,7 +7,7 @@
 [% ELSE -%]
     ServerAlias [% vhost.serveralias %]
 [% END -%]
-#    DocumentRoot [% vhost.documentroot %]
+#    DocRoot [% vhost.documentroot %]
 [% IF vhost.serveradmin -%]
     ServerAdmin [% vhost.serveradmin %]
 [% ELSE %]
