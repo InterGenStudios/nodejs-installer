@@ -230,21 +230,21 @@ HELPTEXT () {
     echo " -cv \$username \$domain"
     WHITE
     echo "     creates NodeJS vhost entry for given \$username and \$domain"
-    YELLOW
+    BLUE
     echo "    (Note- only the variables listed will be accepted, and they are required)"
     echo
     BOLD_WHITE
     echo " -ca \$new-username \$new-domain \$new-userpass \$contact-email"
     WHITE
     echo "     creates a cpanel user account using the listed arguments"
-    YELLOW
+    BLUE
     echo "    (Note- only the variables listed will be accepted, and they are all required)"
     echo
     BOLD_WHITE
     echo " -cs \$subdomain \$maindomain"
     WHITE
     echo "     creates a cpanel account subdomain using the listed arguments"
-    YELLOW
+    BLUE
     echo "    (Note- only the variables listed will be accepted, and they are required)"
     echo "    (Note- only enter the subdomain prefix for '\$subdomain', not '\$subdomain.\$maindomain.com')"
     echo
