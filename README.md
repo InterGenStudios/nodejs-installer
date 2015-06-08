@@ -13,7 +13,7 @@ Server root pass is required for use
 mkdir -p /usr/local/src && cd /usr/local/src
 wget https://raw.githubusercontent.com/InterGenStudios/nodejs-installer/master/instnjs
 chmod +x instnjs
-echo alias instcms=\'/bin/bash /usr/local/src/instnjs\' >> ~/.bashrc
+echo alias instnjs=\'/bin/bash /usr/local/src/instnjs\' >> ~/.bashrc
 /bin/bash /usr/local/src/instnjs -h
 source ~/.bashrc
 
