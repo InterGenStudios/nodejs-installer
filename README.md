@@ -19,8 +19,7 @@ source ~/.bashrc
 
 
 
-```
+
 To do list:
   1) Start cPanel Plugin GUI Development
   2) Everything else
-```
