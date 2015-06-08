@@ -222,7 +222,7 @@ HELPTEXT () {
     printf " -h) "
     WHITE
     echo "displays NodeJS Installer helptext and exits"
-    printf "\n\n\n"
+    printf "\n\n"
     GREEN
     echo "Operands:"
     echo
@@ -248,7 +248,6 @@ HELPTEXT () {
     echo "    (Note- only the variables listed will be accepted, and they are required)"
     echo "    (Note- only enter the '\$subdomain', not '\$subdomain.\$maindomain.com')"
     echo
-    printf "\n\n"
     exit 0
 }
 
