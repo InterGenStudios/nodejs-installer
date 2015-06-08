@@ -253,25 +253,25 @@ HELPTEXT () {
 
 # Propaganda splash screen - with flair if the server has figlet installed
 VERSION () {
-  clear
-  SEPARATOR
-  if [ "$(figlet -v | head -1 | awk '{print $2}')" = "Copyright" ]; then
+    clear
+    SEPARATOR
+    if [ "$(figlet -v | head -1 | awk '{print $2}')" = "Copyright" ]; then
+        BLUE
+        figlet NodeJS Installer
+        WHITE
+    else
+        GREEN
+        echo " NodeJS Installer"
+    fi
+    echo
     BLUE
-    figlet NodeJS Installer
+    echo " A ServerGurus project."
     WHITE
-  else
-    GREEN
-    echo " NodeJS Installer"
-  fi
-  echo
-  BLUE
-  echo " A ServerGurus project."
-  WHITE
-  echo
-  echo " Version: $vers"
-  SEPARATOR
-  echo
-  exit 0
+    echo
+    echo " Version: $vers"
+    SEPARATOR
+    echo
+    exit 0
 }
 
 #----------------------#
@@ -326,18 +326,18 @@ INSTALL_NODEJS () {
     echo
     sleep 4
     WHITE
-        function MAKE_PROGRESS_BAR {
-            # Re-setting the makefile logsize into the function allows it to be updated for the progress bar
-            MAKE_ACTUALSIZE="$(wc -c < nodejs_makefile_log)"
-            # Progress Bar function math calculations
-            let PROGRESS=(${MAKE_ACTUALSIZE}*100/${MAKE_TARGETSIZE}*100)/100
-            let COMPLETED=(${PROGRESS}*4)/10
-            let REMAINING=40-$COMPLETED
-            COMPLETED=$(printf "%${COMPLETED}s")
-            REMAINING=$(printf "%${REMAINING}s")
-            # Actual print command for the progress bar
-            printf "\r      Compiling NodeJS from source : [${COMPLETED// /#}${REMAINING// / }] ${PROGRESS}%%"
-        }
+    MAKE_PROGRESS_BAR () {
+        # Re-setting the makefile logsize into the function allows it to be updated for the progress bar
+        MAKE_ACTUALSIZE="$(wc -c < nodejs_makefile_log)"
+        # Progress Bar function math calculations
+        let PROGRESS=(${MAKE_ACTUALSIZE}*100/${MAKE_TARGETSIZE}*100)/100
+        let COMPLETED=(${PROGRESS}*4)/10
+        let REMAINING=40-$COMPLETED
+        COMPLETED=$(printf "%${COMPLETED}s")
+        REMAINING=$(printf "%${REMAINING}s")
+        # Actual print command for the progress bar
+        printf "\r      Compiling NodeJS from source : [${COMPLETED// /#}${REMAINING// / }] ${PROGRESS}%%"
+    }
     # Running the make command in the background and sending the output into the logfile
     make >> nodejs_makefile_log &
     # Grabs the 'make' PID to check for completion
