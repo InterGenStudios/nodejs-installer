@@ -147,7 +147,6 @@ CLEARLINE () {
 # Ran if CTRL+C is sent
 trap bashtrap INT
 
-# NOT_FINISHED
 bashtrap () {
     clear
     HEADER
