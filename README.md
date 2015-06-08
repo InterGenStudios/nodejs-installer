@@ -16,7 +16,7 @@ chmod +x instnjs
 echo alias instnjs=\'/bin/bash /usr/local/src/instnjs\' >> ~/.bashrc
 /bin/bash /usr/local/src/instnjs -h
 source ~/.bashrc
-
+```
 
 
 
