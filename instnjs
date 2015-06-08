@@ -236,17 +236,17 @@ HELPTEXT () {
     BOLD_WHITE
     echo " -ca \$new-username \$new-domain \$new-userpass \$contact-email"
     WHITE
-    echo "     creates a cpanel user account using the variables passed to it"
+    echo "     creates a cpanel user account using the listed arguments"
     YELLOW
     echo "    (Note- only the variables listed will be accepted, and they are all required)"
     echo
     BOLD_WHITE
     echo " -cs \$subdomain \$maindomain"
     WHITE
-    echo "     creates a cpanel account subdomain using the variables passed to it"
+    echo "     creates a cpanel account subdomain using the listed arguments"
     YELLOW
     echo "    (Note- only the variables listed will be accepted, and they are required)"
-    echo "    (Note- only enter the subdomain prefix for '\$subdomain', not 'subdomain.maindomain.com')"
+    echo "    (Note- only enter the subdomain prefix for '\$subdomain', not '\$subdomain.\$maindomain.com')"
     echo
     printf "\n\n"
     exit 0
