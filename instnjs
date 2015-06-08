@@ -246,7 +246,7 @@ HELPTEXT () {
     echo "     creates a cpanel account subdomain using the listed arguments"
     BLUE
     echo "    (Note- only the variables listed will be accepted, and they are required)"
-    echo "    (Note- only enter the subdomain prefix for '\$subdomain', not '\$subdomain.\$maindomain.com')"
+    echo "    (Note- only enter the '\$subdomain', not '\$subdomain.\$maindomain.com')"
     echo
     printf "\n\n"
     exit 0
