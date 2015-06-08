@@ -1,4 +1,4 @@
-![alt text](https://intergenstudios.com/Downloads/njs.png "NodeJS Installer")
+![alt text](https://intergenstudios.com/Downloads/njs_inst.png "NodeJS Installer")
 
 ---
 
